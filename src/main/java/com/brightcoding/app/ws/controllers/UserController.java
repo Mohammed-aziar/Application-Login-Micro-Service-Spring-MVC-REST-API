@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.brightcoding.app.ws.exceptions.UserException;
 import com.brightcoding.app.ws.requests.UserRequest;
+import com.brightcoding.app.ws.responses.ErrorMessage;
 import com.brightcoding.app.ws.responses.UserResponse;
 import com.brightcoding.app.ws.services.UserService;
 import com.brightcoding.app.ws.shared.dto.UserDto;
@@ -42,7 +44,10 @@ public class UserController {
 	@PostMapping(	consumes = {MediaType.APPLICATION_XML_VALUE,MediaType.APPLICATION_JSON_VALUE},
 					produces = {MediaType.APPLICATION_XML_VALUE,MediaType.APPLICATION_JSON_VALUE}
 				)
-	public ResponseEntity<UserResponse> createUser(@RequestBody UserRequest userRequest) {
+	public ResponseEntity<UserResponse> createUser(@RequestBody UserRequest userRequest) throws Exception{
+		
+		if(userRequest.getEmail().isEmpty() || userRequest.getFirstName().isEmpty() || userRequest.getLastName().isEmpty() || userRequest.getPassword().isEmpty()) throw new UserException(ErrorMessage.MISSING_REQUIRED_FIELD.getErrorMessage());
+		
 		UserDto userDto=new UserDto();
 		BeanUtils.copyProperties(userRequest, userDto);
 		UserDto createUser = userService.createUser(userDto);
