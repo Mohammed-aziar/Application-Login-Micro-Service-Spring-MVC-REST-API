@@ -14,9 +14,16 @@ import com.brightcoding.app.ws.responses.ErrorUserClass;
 @ControllerAdvice
 public class AppExceptionHandler {
 	
-	@ExceptionHandler
+	@ExceptionHandler(value = UserException.class)
 	public ResponseEntity<Object> HandlerUserException(UserException ex,WebRequest request){
 		ErrorUserClass exceptionMessage = new ErrorUserClass(new Date(), ex.getMessage()); 
 		return new ResponseEntity<>(exceptionMessage,new HttpHeaders(),HttpStatus.INTERNAL_SERVER_ERROR);
 	}
+	
+	@ExceptionHandler(value = Exception.class)
+	public ResponseEntity<Object> HandlerException(Exception ex,WebRequest request){
+		ErrorUserClass exceptionMessage = new ErrorUserClass(new Date(), ex.getMessage()); 
+		return new ResponseEntity<>(exceptionMessage,new HttpHeaders(),HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
 }
