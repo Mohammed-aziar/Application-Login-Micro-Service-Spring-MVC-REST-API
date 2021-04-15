@@ -3,6 +3,7 @@ package com.brightcoding.app.ws.services.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ import com.brightcoding.app.ws.entities.UserEntity;
 import com.brightcoding.app.ws.repositories.UserRepository;
 import com.brightcoding.app.ws.services.UserService;
 import com.brightcoding.app.ws.shared.Utils;
+import com.brightcoding.app.ws.shared.dto.AddressDto;
 import com.brightcoding.app.ws.shared.dto.UserDto;
 
 @Service
@@ -37,18 +39,40 @@ public class UserServiceImpl implements UserService {
 		UserEntity checkUser = userRepository.findByEmail(user.getEmail());
 
 		if (checkUser != null)
-			throw new RuntimeException("User AlredyExists");
+			throw new RuntimeException("Email Alredy Exists");
 
-		UserEntity userEntity = new UserEntity();
-		BeanUtils.copyProperties(user, userEntity);
+		/*
+		 * UserEntity userEntity = new UserEntity();
+		 * 
+		 * BeanUtils.copyProperties(user, userEntity);
+		 *
+		 * userEntity.setEncryptedpassword(bCryptPasswordEncoder.encode(user.getPassword
+		 * ())); userEntity.setUserId(utils.generateStringId(32)); UserEntity userSaved
+		 * = userRepository.save(userEntity); UserDto userDto = new UserDto();
+		 *
+		 * BeanUtils.copyProperties(userSaved, userDto);
+		 *
+		 */
+		
+		
+		ModelMapper modelMapper = new ModelMapper();
+
+		for (int i = 0; i < user.getAdresses().size(); i++) {
+			AddressDto adresses = user.getAdresses().get(i);
+			adresses.setUser(user);
+			adresses.setAddressId(utils.generateStringId(20));
+			
+			user.getAdresses().set(i,adresses);
+		}
+		UserEntity userEntity = modelMapper.map(user, UserEntity.class);
+		
 		userEntity.setEncryptedpassword(bCryptPasswordEncoder.encode(user.getPassword()));
+
 		userEntity.setUserId(utils.generateStringId(32));
-		UserEntity newUser = userRepository.save(userEntity);
 
-		UserDto userDto = new UserDto();
+		UserEntity UserSaved = userRepository.save(userEntity);
 
-		BeanUtils.copyProperties(newUser, userDto);
-
+		UserDto userDto = modelMapper.map(UserSaved, UserDto.class);
 		return userDto;
 	}
 
@@ -76,8 +100,12 @@ public class UserServiceImpl implements UserService {
 		UserEntity userEntity = userRepository.findByUserId(userId);
 		if (userEntity == null)
 			throw new UsernameNotFoundException(userId);
-		UserDto userDto = new UserDto();
-		BeanUtils.copyProperties(userEntity, userDto);
+		
+		ModelMapper modelMapper = new ModelMapper();
+		UserDto userDto = modelMapper.map(userEntity, UserDto.class);
+		
+//		UserDto userDto = new UserDto();
+//		BeanUtils.copyProperties(userEntity, userDto);
 		return userDto;
 	}
 
@@ -98,7 +126,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void deleteUser(String userId) {
-		
+
 		UserEntity userEntity = userRepository.findByUserId(userId);
 
 		if (userEntity == null) {
@@ -110,16 +138,17 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public List<UserDto> getUsers(int page, int limit) {
-	if(page > 0 )	page -= page;
-		
-		List<UserDto> users =  new ArrayList<>();
+		if (page > 0)
+			page -= page;
+
+		List<UserDto> users = new ArrayList<>();
 		PageRequest pageable = PageRequest.of(page, limit);
-		Page <UserEntity> usersEntities = userRepository.findAll(pageable);
-		
+		Page<UserEntity> usersEntities = userRepository.findAll(pageable);
+
 		for (UserEntity user : usersEntities) {
-				UserDto dto= new UserDto();
-				BeanUtils.copyProperties(user, dto);
-				users.add(dto);
+			UserDto dto = new UserDto();
+			BeanUtils.copyProperties(user, dto);
+			users.add(dto);
 		}
 		return users;
 	}

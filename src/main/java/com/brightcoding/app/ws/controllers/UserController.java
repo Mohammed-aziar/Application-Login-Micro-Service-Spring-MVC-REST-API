@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -58,11 +59,17 @@ public class UserController {
 				produces = {MediaType.APPLICATION_XML_VALUE,MediaType.APPLICATION_JSON_VALUE}
 			)
 	public ResponseEntity<UserResponse> getUser(@PathVariable("id") String id) {
+//		UserDto userdto = userService.getUserById(id);
+//		UserResponse userResponse=new UserResponse();
+//		BeanUtils.copyProperties(userdto, userResponse);
 		UserDto userdto = userService.getUserById(id);
-		UserResponse userResponse=new UserResponse();
-		BeanUtils.copyProperties(userdto, userResponse);
+		ModelMapper modelMapper = new ModelMapper();
+		UserResponse userResponse=modelMapper.map(userdto, UserResponse.class);
 		return new ResponseEntity<UserResponse>(userResponse,HttpStatus.OK);
 	}
+	
+	
+	
 	
 	@PostMapping(	consumes = {MediaType.APPLICATION_XML_VALUE,MediaType.APPLICATION_JSON_VALUE},
 					produces = {MediaType.APPLICATION_XML_VALUE,MediaType.APPLICATION_JSON_VALUE}
@@ -71,13 +78,23 @@ public class UserController {
 		
 		if(userRequest.getEmail().isEmpty() || userRequest.getFirstName().isEmpty() || userRequest.getLastName().isEmpty() || userRequest.getPassword().isEmpty()) throw new UserException(ErrorMessage.MISSING_REQUIRED_FIELD.getErrorMessage());
 		
-		UserDto userDto=new UserDto();
-		BeanUtils.copyProperties(userRequest, userDto);
+		//UserDto userDto=new UserDto();
+		//BeanUtils.copyProperties(userRequest, userDto);
+		ModelMapper modelMapper = new ModelMapper();
+		UserDto userDto = modelMapper.map(userRequest, UserDto.class);
+		
 		UserDto createUser = userService.createUser(userDto);
 		
-		UserResponse userResponse=new UserResponse();
+		/*
+		 * UserResponse userResponse = new UserResponse();
+		 * 
+		 * BeanUtils.copyProperties(createUser, userResponse);
+		 * 
+		 * */
 		
-		BeanUtils.copyProperties(createUser, userResponse);
+		UserResponse userResponse=modelMapper.map(createUser, UserResponse.class);
+		
+		
 		
 		return new ResponseEntity<UserResponse>(userResponse,HttpStatus.CREATED);
 	}

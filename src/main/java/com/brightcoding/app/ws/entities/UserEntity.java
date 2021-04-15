@@ -1,12 +1,15 @@
 package com.brightcoding.app.ws.entities;
 
 import java.io.Serializable;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 @Entity(name = "users")
 public class UserEntity  implements Serializable{
 	
@@ -14,10 +17,11 @@ public class UserEntity  implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = -6371470489253542303L;
+	
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@Column
+	@Column(length =50,nullable = false)
 	private String userId;
 	
 	@Column(nullable = false , length = 50)
@@ -37,6 +41,12 @@ public class UserEntity  implements Serializable{
 	
 	@Column( nullable = false)
 	private Boolean emailVerificationStatus =false;
+	
+	@OneToMany(mappedBy = "User" ,cascade = CascadeType.ALL)
+	private List<AddressEntity> adresses;
+	
+	@OneToMany(mappedBy = "user")
+	private ContactEntity contact;
 	
 	
 	public long getId() {
@@ -86,6 +96,18 @@ public class UserEntity  implements Serializable{
 	}
 	public void setEmailVerificationStatus(Boolean emailVerificationStatus) {
 		this.emailVerificationStatus = emailVerificationStatus;
+	}
+	public List<AddressEntity> getAdresses() {
+		return adresses;
+	}
+	public void setAdresses(List<AddressEntity> adresses) {
+		this.adresses = adresses;
+	}
+	public ContactEntity getContact() {
+		return contact;
+	}
+	public void setContact(ContactEntity contact) {
+		this.contact = contact;
 	}
 	
 }
