@@ -1,6 +1,11 @@
 package com.brightcoding.app.ws.controllers;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.brightcoding.app.ws.exceptions.UserException;
@@ -23,12 +29,29 @@ import com.brightcoding.app.ws.services.UserService;
 import com.brightcoding.app.ws.shared.dto.UserDto;
 
 
+
 @RestController
 @RequestMapping("/users") // Localhost:8080/users
 public class UserController {
 	@Autowired
 	UserService userService;
 	
+
+		@GetMapping(produces = {MediaType.APPLICATION_XML_VALUE,MediaType.APPLICATION_JSON_VALUE})
+		public List<UserResponse> getAllUsers(@RequestParam(value="page",defaultValue = "1") int page,@RequestParam(value="limit",defaultValue = "2") int limit){
+			List<UserResponse> userResponses=new ArrayList<>();
+			
+			List<UserDto> userDto=userService.getUsers(page,limit);
+			
+			for(UserDto dto : userDto) {
+				UserResponse user = new UserResponse();
+				BeanUtils.copyProperties(dto, user);
+				
+				userResponses.add(user);
+				
+			}
+			return userResponses;
+		}
 	
 	
 	@GetMapping(path ="/{id}",
@@ -44,7 +67,7 @@ public class UserController {
 	@PostMapping(	consumes = {MediaType.APPLICATION_XML_VALUE,MediaType.APPLICATION_JSON_VALUE},
 					produces = {MediaType.APPLICATION_XML_VALUE,MediaType.APPLICATION_JSON_VALUE}
 				)
-	public ResponseEntity<UserResponse> createUser(@RequestBody UserRequest userRequest) throws Exception{
+	public ResponseEntity<UserResponse> createUser(@RequestBody @Valid  UserRequest userRequest) throws Exception{
 		
 		if(userRequest.getEmail().isEmpty() || userRequest.getFirstName().isEmpty() || userRequest.getLastName().isEmpty() || userRequest.getPassword().isEmpty()) throw new UserException(ErrorMessage.MISSING_REQUIRED_FIELD.getErrorMessage());
 		

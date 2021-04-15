@@ -1,9 +1,12 @@
 package com.brightcoding.app.ws.services.impl;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -103,6 +106,22 @@ public class UserServiceImpl implements UserService {
 		}
 		userRepository.delete(userEntity);
 
+	}
+
+	@Override
+	public List<UserDto> getUsers(int page, int limit) {
+	if(page > 0 )	page -= page;
+		
+		List<UserDto> users =  new ArrayList<>();
+		PageRequest pageable = PageRequest.of(page, limit);
+		Page <UserEntity> usersEntities = userRepository.findAll(pageable);
+		
+		for (UserEntity user : usersEntities) {
+				UserDto dto= new UserDto();
+				BeanUtils.copyProperties(user, dto);
+				users.add(dto);
+		}
+		return users;
 	}
 
 }
