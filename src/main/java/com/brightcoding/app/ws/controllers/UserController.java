@@ -43,11 +43,10 @@ public class UserController {
 			List<UserResponse> userResponses=new ArrayList<>();
 			
 			List<UserDto> userDto=userService.getUsers(page,limit);
-			
+			ModelMapper modelMapper=new ModelMapper();
 			for(UserDto dto : userDto) {
-				UserResponse user = new UserResponse();
-				BeanUtils.copyProperties(dto, user);
-				
+				UserResponse user = modelMapper.map(dto, UserResponse.class);
+				//BeanUtils.copyProperties(dto, user);
 				userResponses.add(user);
 				
 			}
