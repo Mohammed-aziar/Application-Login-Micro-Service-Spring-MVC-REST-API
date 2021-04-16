@@ -5,7 +5,7 @@ public class ContactResponse  {
 
 	private String  contactId;
 	private String mobile;
-	private String Skype;
+	private String skype;
 	 
 	public String getContactId() {
 		return contactId;
@@ -20,11 +20,12 @@ public class ContactResponse  {
 		this.mobile = mobile;
 	}
 	public String getSkype() {
-		return Skype;
+		return skype;
 	}
 	public void setSkype(String skype) {
-		Skype = skype;
+		this.skype = skype;
 	}
+	
 	
 	
 }

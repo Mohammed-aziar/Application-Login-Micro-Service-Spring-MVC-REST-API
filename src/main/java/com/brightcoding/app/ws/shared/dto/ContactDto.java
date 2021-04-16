@@ -12,7 +12,7 @@ public class ContactDto implements Serializable {
 	private Long Id;
 	private String  contactId;
 	private String mobile;
-	private String Skype;
+	private String skype;
 	private UserDto user;
 	
 	
@@ -29,11 +29,12 @@ public class ContactDto implements Serializable {
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
 	}
+	
 	public String getSkype() {
-		return Skype;
+		return skype;
 	}
 	public void setSkype(String skype) {
-		Skype = skype;
+		this.skype = skype;
 	}
 	public Long getId() {
 		return Id;

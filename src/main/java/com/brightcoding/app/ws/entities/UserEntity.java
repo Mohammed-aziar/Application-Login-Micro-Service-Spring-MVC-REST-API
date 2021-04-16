@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 @Entity(name = "users")
 public class UserEntity  implements Serializable{
 	
@@ -19,6 +20,7 @@ public class UserEntity  implements Serializable{
 	private static final long serialVersionUID = -6371470489253542303L;
 	
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
 	private long id;
 	
 	@Column(length =50,nullable = false)
@@ -45,7 +47,7 @@ public class UserEntity  implements Serializable{
 	@OneToMany(mappedBy = "User" ,cascade = CascadeType.ALL)
 	private List<AddressEntity> adresses;
 	
-	@OneToMany(mappedBy = "user")
+	@OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
 	private ContactEntity contact;
 	
 	

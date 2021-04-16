@@ -2,14 +2,16 @@ package com.brightcoding.app.ws.entities;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotBlank;
-
+@Entity(name = "contacts")
 public class ContactEntity implements Serializable {
 
 	
@@ -24,8 +26,8 @@ public class ContactEntity implements Serializable {
 	private String mobile;
 	private String skype;
 	
-	@OneToMany
-	@JoinColumn(name = "user_id")
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
 	private UserEntity user;
 	
 	public Long getId() {
